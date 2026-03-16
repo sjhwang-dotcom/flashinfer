@@ -4,8 +4,8 @@
 # Minimum commits threshold: 1
 # Manual overrides applied from overrides file
 
-benchmarks/ @bkryu @nv-yunzheq @yzh119 @saltyminty @IwakuraRein
-benchmarks/routines/ @bkryu @nv-yunzheq @saltyminty @Anerudhan @jiahanc
+benchmarks/ @bkryu @nv-yunzheq @jiahanc @yzh119 @saltyminty
+benchmarks/routines/ @bkryu @nv-yunzheq @jiahanc @saltyminty @Anerudhan
 ci/ @yzh119 @yongwww @nvmbreughe @cyx-6
 csrc/ @yzh119 @jimmyzho @nv-yunzheq @IwakuraRein @cyx-6
 csrc/fmha_v2/ @flashinfer-ai/attention-owners @jimmyzho
@@ -18,7 +18,7 @@ csrc/nv_internal/include/ @nv-yunzheq
 csrc/nv_internal/tensorrt_llm/ @nv-yunzheq @yzh119 @bkryu @djmmoss @wenscarl
 csrc/xqa/ @flashinfer-ai/attention-owners @cyx-6 @yzh119
 docs/ @yzh119 @bkryu @wenscarl
-flashinfer/ @yzh119 @bkryu @jimmyzho @nv-yunzheq @kahyunnam
+flashinfer/ @yzh119 @bkryu @jimmyzho @nv-yunzheq @aleozlx
 flashinfer-cubin/ @yzh119 @cyx-6
 flashinfer-cubin/flashinfer_cubin/ @yzh119
 flashinfer-jit-cache/ @yzh119 @cyx-6
@@ -32,10 +32,12 @@ flashinfer/fused_moe/cute_dsl/ @nv-yunzheq
 flashinfer/gdn_kernels/ @flashinfer-ai/misc-op-owners @kahyunnam @kaixih
 flashinfer/gemm/ @flashinfer-ai/gemm-owners @bkryu @jimmyzho @nv-yunzheq @yongwww
 flashinfer/gemm/kernels/ @nv-yunzheq @bkryu
-flashinfer/jit/ @yzh119 @jimmyzho @nv-yunzheq @kahyunnam @dierksen
-flashinfer/jit/attention/ @yzh119 @jimmyzho @cyx-6
-flashinfer/jit/gemm/ @yzh119 @jimmyzho @nv-yunzheq @jiahanc
+flashinfer/jit/ @yzh119 @jimmyzho @aleozlx @nv-yunzheq @kahyunnam
+flashinfer/jit/attention/ @jimmyzho @yzh119 @cyx-6
+flashinfer/jit/gemm/ @yzh119 @jimmyzho @aleozlx @nv-yunzheq @jiahanc
 flashinfer/logits_processor/ @yzh119
+flashinfer/norm/ @yzh119
+flashinfer/norm/kernels/ @yzh119
 flashinfer/triton/ @jimmyzho @yzh119 @nvmbreughe
 flashinfer/triton/kernels/ @yzh119
 include/ @yzh119 @nv-yunzheq @kahyunnam @jimmyzho @jiahanc
@@ -48,7 +50,8 @@ include/flashinfer/mamba/ @yzh119
 include/flashinfer/trtllm/ @nv-yunzheq @yzh119 @jimmyzho @jiahanc @IwakuraRein
 scripts/ @yzh119 @kahyunnam @sricketts @yongwww
 tests/ @bkryu @yzh119 @nvmbreughe @jimmyzho @nv-yunzheq
-tests/attention/ @flashinfer-ai/attention-owners @nvmbreughe @yzh119 @bkryu @Anerudhan
+tests/attention/ @flashinfer-ai/attention-owners @nvmbreughe @yzh119 @bkryu @jimmyzho
+tests/autotuner/ @bkryu
 tests/cli/ @sricketts
 tests/comm/ @flashinfer-ai/comm-owners @nvmbreughe @bkryu @dierksen @wenscarl
 tests/gdn/ @flashinfer-ai/misc-op-owners @kahyunnam @kaixih @bkryu @yzh119
