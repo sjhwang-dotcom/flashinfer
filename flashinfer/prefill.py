@@ -1546,6 +1546,9 @@ class BatchPrefillWithPagedKVCacheWrapper:
         if backend == "cudnn":
             assert kv_layout == "NHD", "CUDNN backend only supports NHD layout"
 
+        # SM120 native kernel flag (set during plan())
+        self._use_sm120_native = False
+
         self._float_workspace_buffer = float_workspace_buffer
         self._workspace_size = (
             self._float_workspace_buffer.numel()
@@ -1936,7 +1939,16 @@ class BatchPrefillWithPagedKVCacheWrapper:
         self._cached_kv_data_type = kv_data_type
         self._cached_o_data_type = o_data_type
 
-        if self._jit_module is not None:
+        # Check if SM120 native kernel should be used
+        from flashinfer.sm120_prefill import should_use_sm120_kernel
+        self._use_sm120_native = should_use_sm120_kernel(head_dim_qk, head_dim_vo)
+
+        if self._use_sm120_native:
+            # SM120 native path: skip FA2/FA3 module loading and plan()
+            # Save page_size for run() to use
+            self._sm120_page_size = page_size
+            self._cached_module = None
+        elif self._jit_module is not None:
             self._cached_module = self._jit_module
         else:
             if self._backend == "auto":
@@ -1996,7 +2008,10 @@ class BatchPrefillWithPagedKVCacheWrapper:
                     ]
                     block_id += num_blocks_needed
 
-        if self._cached_module is not None:
+        if self._use_sm120_native:
+            # SM120 native: skip C++ PrefillPlan entirely (it crashes on sm_120 + head_dim>=256)
+            self._plan_info = None
+        elif self._cached_module is not None:
             args = [
                 self._float_workspace_buffer,
                 self._int_workspace_buffer,
@@ -2235,6 +2250,31 @@ class BatchPrefillWithPagedKVCacheWrapper:
 
         if self._prefix_len_ptr is not None:
             mask_mode = MaskMode.MULTIITEMSCORING.value
+
+        # SM120 native kernel path
+        if self._use_sm120_native:
+            from flashinfer.sm120_prefill import sm120_prefill_paged
+
+            _out, _lse = sm120_prefill_paged(
+                q=q,
+                k_cache=k_cache,
+                v_cache=v_cache,
+                qo_indptr=self._qo_indptr_buf,
+                paged_kv_indptr=self._paged_kv_indptr_buf,
+                paged_kv_indices=self._paged_kv_indices_buf,
+                paged_kv_last_page_len=self._paged_kv_last_page_len_buf,
+                num_qo_heads=self._num_qo_heads,
+                num_kv_heads=self._num_kv_heads,
+                page_size=self._sm120_page_size,
+                causal=self._causal,
+                sm_scale=sm_scale,
+                return_lse=return_lse,
+                out=out,
+                lse=lse,
+            )
+            if return_lse:
+                return (_out, _lse)
+            return _out
 
         if self._backend == "cudnn":
             if self._seq_lens_q is not None and self._seq_lens_q.dim() == 1:
