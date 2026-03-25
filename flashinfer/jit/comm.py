@@ -58,7 +58,7 @@ def gen_nvshmem_module() -> JitSpec:
 
 def gen_trtllm_comm_module() -> JitSpec:
     nvcc_flags = current_compilation_context.get_nvcc_flags_list(
-        supported_major_versions=[9, 10]
+        supported_major_versions=[9, 10, 12]
     )
     return gen_jit_spec(
         "trtllm_comm",

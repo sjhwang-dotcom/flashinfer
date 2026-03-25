@@ -246,9 +246,9 @@ def gen_trtllm_gen_fused_moe_sm100_module() -> JitSpec:
         "bmm", header_dest_dir, header_path, ArtifactPath.TRTLLM_GEN_BMM, checksum
     )
 
-    # currently only support Blackwell
+    # Blackwell SM 10.x and SM 12.x (workstation Blackwell)
     nvcc_flags = current_compilation_context.get_nvcc_flags_list(
-        supported_major_versions=[10]
+        supported_major_versions=[10, 12]
     )
 
     return gen_jit_spec(

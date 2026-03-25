@@ -409,13 +409,14 @@ void FusedMoeLauncher::init_common(
     std::unique_ptr<tensorrt_llm::kernels::trtllmgen_moe::MoE::MoERunnerArgs>&& args,
     int64_t tile_tokens_dim, int64_t routing_method_type, bool use_shuffled_weight,
     int64_t weight_layout, ActivationType activation_type) {
-  // Check devicearchitecture: Blackwell (SM 10.x) required
+  // Check device architecture: Blackwell (SM 10.x or SM 12.x) required
   auto device = hidden_states.device().device_id;
   int major = 0, minor = 0;
   cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, device);
   cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, device);
-  TVM_FFI_ICHECK_EQ(major, 10) << "MoE kernel requires 10.x architecture. Current device has SM "
-                               << major << minor;
+  TVM_FFI_ICHECK(major == 10 || major == 12)
+      << "MoE kernel requires 10.x or 12.x architecture. Current device has SM "
+      << major << "." << minor;
   this->device_version = std::make_tuple(major, minor);
 
   args->routing_logits = routing_logits.has_value() ? routing_logits.value().data_ptr() : nullptr;
