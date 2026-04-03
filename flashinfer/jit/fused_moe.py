@@ -36,6 +36,7 @@ def gen_cutlass_fused_moe_sm120_module(use_fast_build: bool = False) -> JitSpec:
         "-DCOMPILE_BLACKWELL_SM120_TMA_GROUPED_GEMMS",
         "-DENABLE_BF16",
         "-DENABLE_FP8",
+        "-DENABLE_FP8_BLOCK_SCALE" if is_cuda_version_at_least("12.8") else "",
         "-DENABLE_FP4",
         "-DUSING_OSS_CUTLASS_MOE_GEMM",
     ]
